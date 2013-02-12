@@ -1,0 +1,7 @@
+config interface 'lan'
+    option ifname 'eth0'
+    option proto 'dhcp'
+
+config interface 'wan'
+    option ifname 'wlan0'
+    option proto 'dhcp'

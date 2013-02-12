@@ -1,0 +1,2 @@
+PACKAGES="mjpg-streamer"
+DEPENDS="usb"

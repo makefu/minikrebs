@@ -1,0 +1,70 @@
+#!/bin/sh
+set -eu
+usage() {
+    echo "Usage: $0 PROFILE [PLATFORM:-WR703]"
+}
+
+[ x"${1:-}" = "x" ] && usage && exit 1
+
+HERE="$(dirname $(readlink -f $0))"
+PROFILE_DIR="${HERE}/profiles"
+TRAIT_DIR="${HERE}/traits"
+BUILD_DIR="${HERE}/build/"
+PLATFORM="${2:-TLWR703}"
+PROFILE="$PROFILE_DIR/$1"
+ALL_PACKAGES=""
+APPEND_FILES=("etc/rc.local")
+
+indent() {
+    while read line;do
+    yes ' ' | head -${1:-4} | tr -d '\n'
+    echo $line
+    done
+}
+
+handle_append(){
+    local CURRENT_TRAIT_DIR="$1"
+    for i in ${APPEND_FILES[@]};do
+        [ -e "$CURRENT_TRAIT_DIR/files/$i" ] && cat "$CURRENT_TRAIT_DIR/files/$i" >>\
+            "$BUILD_DIR/customfiles/$i"
+    done
+}
+handle_trait_dir(){
+    local CUR="$(readlink -f $1 )"
+    if [ "$(readlink -f $TRAIT_DIR )" = "$CUR" ];then
+        return 0
+    else
+        # higher level traits supersede more general definitions
+        cd "$CUR"
+        echo "in $CUR" >&2
+        handle_trait_dir .. ||:
+        if [ -e "$CUR/files" ] ;then
+            rsync -rl --exclude "$APPEND_FILES" "$CUR/files/"* "$BUILD_DIR/customfiles" >/dev/null
+            handle_append "$CUR"
+        fi
+        if [ -e "$CUR/MANIFEST" ];then
+            source "$CUR/MANIFEST"
+            echo -n "$PACKAGES " 
+        fi
+    fi
+
+}
+
+build_custom_make(){ 
+    #hack to avoid newlines in build file
+    PLATFORM="$1"
+    shift
+    echo "make PROFILE='$PLATFORM' PACKAGES='$@' FILES=customfiles/" > \
+        "$BUILD_DIR/custom_make"
+}
+main (){
+    rm -r "$BUILD_DIR/customfiles"
+    mkdir "$BUILD_DIR/customfiles"
+    ALL_PACKAGES=`cat "$PROFILE" | while read trait;do
+        echo "Handling $TRAIT_DIR/$trait" >&2        
+        handle_trait_dir "$TRAIT_DIR/$trait" ||:
+    done`
+    build_custom_make "$PLATFORM" "$ALL_PACKAGES"
+}
+
+main $@

@@ -1,0 +1,2 @@
+PACKAGES="tinc"
+DEPENDS="core"

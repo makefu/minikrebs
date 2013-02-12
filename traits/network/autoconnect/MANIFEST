@@ -1,0 +1,3 @@
+
+#even though krebs is no hard dependency, the autoconnect feature has no use if the node does not connect back
+DEPENDS="krebs network/client-mode"

@@ -1,0 +1,8 @@
+config wifi-iface
+    option device   radio0
+    option network  lan
+    option mode     ap
+    option ssid     Maintenance
+    option encryption psk2
+    option key  'minikrebse lolwut'
+    option hidden   1
