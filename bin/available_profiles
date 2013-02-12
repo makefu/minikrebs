@@ -1,0 +1,32 @@
+#!/bin/sh
+# shows available traits
+# $1 can be a different trait dir
+HERE=$(dirname $(readlink -f $0))
+
+indent() {
+    while read line;do
+    yes ' ' | head -${1:-4} | tr -d '\n'
+    echo $line
+    done
+}
+usage (){
+    cat << EOF
+usage: $0 [PROFILE_DIR]
+
+ENVIRONMENT:
+    HIDE_TRAITS -- shows all included traits by the profile (default: false)
+EOF
+}
+
+[ "$1" = "--help" ] && usage && exit 0
+
+cd ${1:-${HERE}/../profiles}
+shift
+echo "Available profiles:"
+find * | while read line; do 
+        echo  "$line" | indent 2
+        if [ -z "${HIDE_TRAITS:-}" ];then
+            #echo " includes:" | indent 2
+            cat "$line" | indent 4
+        fi
+done

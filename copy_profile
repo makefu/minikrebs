@@ -1,16 +1,24 @@
 #!/bin/sh
 set -eu
 usage() {
-    echo "Usage: $0 PROFILE [PLATFORM:-WR703]"
+    cat << EOF
+Usage: $0 PROFILE
+
+ENVIRONMENT:
+    PLATFORM  -- Set openWRT platform (Default: TLWR703)
+    TRAIT_DIR -- Set Trait directory (Default traits/)
+EOF
+    echo
+    HIDE_TRAITS="true" bin/available_profiles
 }
 
 [ x"${1:-}" = "x" ] && usage && exit 1
 
 HERE="$(dirname $(readlink -f $0))"
 PROFILE_DIR="${HERE}/profiles"
-TRAIT_DIR="${HERE}/traits"
+TRAIT_DIR="${TRAIT_DIR:-${HERE}/traits}"
 BUILD_DIR="${HERE}/build/"
-PLATFORM="${2:-TLWR703}"
+PLATFORM="${PLATFORM:-TLWR703}"
 PROFILE="$PROFILE_DIR/$1"
 ALL_PACKAGES=""
 APPEND_FILES=("etc/rc.local")
@@ -36,7 +44,7 @@ handle_trait_dir(){
     else
         # higher level traits supersede more general definitions
         cd "$CUR"
-        echo "in $CUR" >&2
+        #echo "in $CUR" >&2
         handle_trait_dir .. ||:
         if [ -e "$CUR/files" ] ;then
             rsync -rl --exclude "$APPEND_FILES" "$CUR/files/"* "$BUILD_DIR/customfiles" >/dev/null
