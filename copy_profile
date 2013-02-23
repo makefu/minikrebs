@@ -17,7 +17,7 @@ EOF
 HERE="$(dirname $(readlink -f $0))"
 PROFILE_DIR="${HERE}/profiles"
 TRAIT_DIR="${TRAIT_DIR:-${HERE}/traits}"
-BUILD_DIR="${HERE}/build/"
+BUILD_DIR="${HERE}/builder/"
 PLATFORM="${PLATFORM:-TLWR703}"
 PROFILE="$PROFILE_DIR/$1"
 ALL_PACKAGES=""
@@ -62,12 +62,12 @@ build_custom_make(){
     #hack to avoid newlines in build file
     PLATFORM="$1"
     shift
-    echo "make PROFILE='$PLATFORM' PACKAGES='$@' FILES=customfiles/" > \
+    echo "make image PROFILE='$PLATFORM' PACKAGES='$@' FILES=customfiles/" > \
         "$BUILD_DIR/custom_make"
 }
 main (){
-    rm -r "$BUILD_DIR/customfiles"
-    mkdir "$BUILD_DIR/customfiles"
+    rm -r "$BUILD_DIR/customfiles" || :
+    mkdir "$BUILD_DIR/customfiles" || :
     ALL_PACKAGES=`cat "$PROFILE" | while read trait;do
         echo "Handling $TRAIT_DIR/$trait" >&2        
         handle_trait_dir "$TRAIT_DIR/$trait" ||:

@@ -6,10 +6,7 @@ cd $(dirname $(readlink -f $0))
 if [ x"${1:-}" == x ];then
     echo "usage: $0 PROFILE"
     echo
-    echo "Available Profiles:"
-    ls -1 profiles/ |grep -v '^README' | grep -v '^init$' | while read profile; do
-        echo "    $profile"
-    done
+    HIDE_TRAITS="true" sh $(dirname $(readlink -f $0))/bin/available_profiles
     exit 1
 fi
 PROFILE=$1
@@ -22,21 +19,12 @@ else
 fi
 echo
 echo "copying generic init:"
-cp --remove-destination  profiles/init  builder/init
+cp --remove-destination  lib/init  builder/init
 echo "  profile/init -> builder/init"
 [ -e builder/overlay ] && echo "removing old overlay" && rm -rf builder/overlay
 echo
 echo "copying profile:"
-find  profiles/$PROFILE -mindepth 1 -maxdepth 1| while read file; do
-    echo "  $file -> builder/$(basename $file)"
-    rm -rf builder/$(basename $file)
-    cp -r $file builder/
-done
-
-echo
-echo $PROFILE > builder/current_profile
-echo "Finished Preparing Profile $PROFILE"
-echo 'run `builder/init`'
+./copy_profile "$PROFILE"
 
 if [ -e builder/overlay ];then
     echo
