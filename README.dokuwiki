@@ -1,0 +1,270 @@
+Please see http://shackspace.de/wiki/doku.php?id=project:minikrebs for a formatted version.
+
+====== minikrebs ======     
+{{tag> software hardware computing networking}}
+In short:
+
+**minikrebs is an low-interaction special-purpose firmware generator for the TP-Link WR703N.**
+
+Longer Version:
+The project minikrebs is a meta-project for a number of special-purpose images for the TP-Link WR703n (or MR3020) Wireless Router. These Images are called `profiles` in the context and are build with the help of the OpenWRT Image Builder. Building the complete image is very important as the scarcest  resource of the wr703n is its 4MB Flash memory
+
+===== TLDR ======
+This is how you get a cool webcam-streamer firmware for your WR703N:
+   ./prepare instacam && builder/init 
+Use it to flash your minirouter, password is `minikrebs`
+
+===== DISCLAMER =====
+All code is pseudo-code and it might or might not work on your system. Copy-Paste with extreme caution.
+
+===== Hardware =====
+Hardware Platform is in most cases the TP-Link WR703N
+Buy at: 
+  - [[https://www.amazon.de/dp/B008UNA6FS/?tag=krebsco-21|Amazon de]]
+  - [[http://www.amazon.com/dp/B0083Z54P0/?tag=krebsco-20|Amazon com]]
+
+Almost 100% compatible is the TP-Link MR3020 which was built for the european market and is a bit bigger, has 5 LEDs and a 3-way switch.
+Buy at:
+  - [[http://www.amazon.com/dp/B006DEBXD0/?tag=krebsco-20|Amazon com]]
+  - [[https://www.amazon.de/dp/B00634PLTW/?tag=krebsco-21|Amazon de]]
+
+===== Installation =====
+All code is stored in the painload git repository at https://github.com/krebscode/painload .
+
+  git clone https://github.com/krebscode/painload
+  cd painload/minikrebs
+
+
+===== Build Environment =====
+The following convenience scripts are available under /painload/minikrebs:
+  ./prepare -- prepares the build environment for a given profile into builder/
+  ./upgrade -- writes the created image to your minikrebs via ssh
+  ./restore -- restores custom files from builder folder
+
+
+===== Profiles =====
+Profiles provide the core functionality of minikrebs. It contains everything you need to build an awesome, special-purpose firmware for your mini computer.
+
+Profiles are a combination of three things:
+   - An Idea
+   - A custom make command for the Image Builder
+   - A directory of custom files to be included in the final image
+
+The Next section describes the currently available profiles - please note, profiles may change faster than this wiki page, so have a look at minikrebs/profiles
+
+Also, `good` profiles will contain a doc/ folder which describes what the profiles does and what its prerequirements are.
+
+Default Password for all profiles is `minikrebs`
+
+
+
+
+==== instacam ====
+
+The aim of the project is to reliably push a video stream directly to the internets for
+everyone to see at a very low price.
+
+{{https://lh6.googleusercontent.com/-j7s_fzJkEP8/UPMvE8YPHXI/AAAAAAAAAKg/WvaGHPDvgt4/s640/IMG_20130113_225119.jpg}}
+
+=== Hardware ===
+
+== Core (Wifi / Ethernet) ==
+    - TP-Link WR703n ([[https://www.amazon.de/dp/B008UNA6FS/?tag=krebsco-21|AmazonDE ]], [[http://www.amazon.com/dp/B007PTCFFW/?tag=krebsco-20|Amazon com]], [[http://www.ebay.de/itm/BLUE-Mini-Nano-TP-LINK-TL-WR703N-150Mbps-WiFi-for-iPhone-4S-Wireless-Router-HOT-/360501556127?pt=COMP_EN_Routers&hash=item53ef91339f|Ebay China]])        ~ 16 Euro
+    - USB Webcam
+        - [[https://www.amazon.de/dp/B003PAOAWG/?tag=krebsco-21|Logitech C270 with Autofocus (AZ)]] ~ 25 Euro
+        - [[http://dx.com/p/compact-1-3mp-pc-usb-webcam-with-built-in-microphone-black-51874?Utm_rid=93398939&Utm_source=affiliate|China NoName Cam (DX)]]       ~ 5++ Euro
+        - [[http://www.ideasonboard.org/uvc/|List of UVC Supported Devices]]
+        - [[http://linuxtv.org/wiki/index.php/Gspca_devices|List of GSPCA Supported Devices]]
+== 4G / 3G / UMTS ==
+Currently Untested:
+    - usb hub ~ 4  Euro
+         - [[http://dx.com/p/4-port-usb-2-0-hub-7980?Utm_rid=93398939&Utm_source=affiliate|NoName USB 2.0 Hub (DX)]]
+         - [[http://www.ebay.de/itm/200825754462?ssPageName=STRK:MEWNX:IT&_trksid=p3984.m1497.l2649#ht_2486wt_1366|NoName USB 2.0 Hub (Ebay)]]
+    - umts stick ~ 20 Euro
+    - MicroSD card (optional)
+
+== Mobile Version ==
+either use (easy mode):
+- USB Battery Bank
+    - [[http://dx.com/p/rechargeable-2000mah-mobile-emergency-power-battery-with-6-adapters-66902?Utm_rid=93398939&Utm_source=affiliate|Dealextreme]] - Provides at least 6h of battery life (with external usb-device)
+or (expert mode):
+- DC-DC StepDown Module
+    - [[http://www.ebay.de/itm/221162832094?ssPageName=STRK:MEWNX:IT&_trksid=p3984.m1497.l2649#ht_3092wt_1132|Ebay]]
+- Battery Pack
+    - take any battery pack you can find (car battery, model making)
+
+=== Software ===
+
+== Build Firmware ==
+
+    git clone github.com/krebscode/painload krebs
+    cd krebs/minikrebs
+    ./prepare instacam
+    builder/init
+
+== Flash ==
+
+    # flash image is at:
+    #       builder/bin/ar71xx/openwrt-ar71xx-generic-tl-wr703n-v1-squashfs-sysupgrade.bin 
+    
+    # either flash image directly via web interface or
+    # after obtaining ssh-access on the router run
+
+    OWN_IP=<<your ip>> ./upgrade <<remote ip>>
+
+----
+
+==== Lazorcam ====
+The minikrebs is deployed inside the shackspace lazor and is powered by its power supply. The next step is to stream the webcam data to ustream via an intermediate VHOST inside the shack infrastructure network. 
+
+
+{{https://lh5.googleusercontent.com/-X9Gy2nhwDfQ/UPMu3-BOUZI/AAAAAAAAAI4/3zsz4p4DlJ0/s640/IMG_20130113_225851.jpg}}
+
+Besides that the image is pretty much equal to the base instacam firmware.
+
+The WR703N is external Antenna adapter modded to be able to connect to the shack wifi through the metal case of the laser.
+
+For more information see [[project:lazorcam|Lazorcam]].
+
+
+==== usbbridge ====
+minikrebs will start up as usbbridge with the usbip-stack.
+It will run usbipd and grab an ip-address via dhcp from the LAN interface.
+
+{{https://lh5.googleusercontent.com/-e-0ZT5zND0s/UPM9LRDUCWI/AAAAAAAAALA/gQZRVdemIJw/s640/IMG_20130114_000208.jpg}}
+
+=== setup ====
+Connect usb-device and then connect krebsplug to power.
+When changing the usb-device, detach it on the client side, 
+power off the krebsplug, attach usb device and power upthen.
+
+=== usage ===
+== client side attach ==
+
+    modprobe vhci-hcd
+    usbip list -r <<KREBSIP>>
+    usbip attach -h <<KREBSIP>> -p 1-1
+
+== client side detach ==
+
+    usbip detach -p 0
+
+==== Rick-Roller ====
+The purpose of the profile is to create an access point where every connection
+is rewritten to rickroll.
+
+{{https://lh3.googleusercontent.com/-l9s5pD3l9sE/UPMyj2MwXlI/AAAAAAAAALk/KmpMeEKnf10/s640/IMG_20130113_231711.jpg}}
+
+If you carry it in your hand when driving by train you will have great fun giggling at the blinking LED.
+
+=== Difficulities ====
+As video autostarting is quite difficult at mobile victims to achieve, 
+a short gif with rick dancing plus the first minute of its famous song will be
+served by the httpd.
+
+Laptops and other clients with phat-browsers will probably honor both autostart loop tags in the new html5 standard.
+
+=== Bare Version ====
+This is the 'bare-metal' version of the rick-roller which opens a network called 'default' and waits for victims and will fit onto your 4MB of flash memory with a minute of rick-rolling audio and a 500KB gif of rick astley dancing.
+
+Without an external usb-stick the space is very limited on the device and you will not fit airbase-ng onto the image to automatically answer all the probes for free networks by mobile devices.
+
+=== Advanced Version ====
+With more disk space you can fit airbase-ng on the system and also push the whole song (and possibly the whole damn video) to victims. 
+
+This image is not yet finished so i advise to use rickroller_bare instead.
+
+=== Software
+The dnsmasq will resolve every domain request to the plugs ip-address. 
+uhttpd will serve a custom rick-astley error-page for every request it receives.
+The LED will blink for 5 seconds and then go off. 
+
+=== Honorable Mentions
+In the process of creating this profile i stumbled upon the Mobile RickRoll Appliance, took their code but except for the idea of using cgi to display a successful roll pretty much nothing survived the complete rewrite. 
+Also the wr703n is much much smaller and the (also much smaller) battery with 2000mah lasts for 6+ hours.
+
+=== Rickroll Loop
+
+8.8  --> 17.3 ; startup loop
+26.3 --> 34   ; were no strangers to love, you know the rules and so do i
+26.3 --> 42.6 ; ... gotta make you understand
+
+==== NFC-Gate =====
+The NFC-Gate is part of the [[https://github.com/shackspace/user_suppository|User Suppository]] infrastructure. It polls the attached nfc-connector for new cards and uses the UID of the card for trying to either log in or log out the user at the shack-infrastructure.
+
+{{https://lh5.googleusercontent.com/-JrmgtdU44Uo/UPNF8FyhcWI/AAAAAAAAALY/tC3la5WarGc/s640/IMG_20130114_003939.jpg}}
+
+The nfcgate is a build for the MR3020[[https://www.amazon.de/dp/B00634PLTW/?tag=krebsco-21|Amazon DE]][[https://www.amazon.de/dp/B00634PLTW/?tag=krebsco-21|Amazon COM]], not the WR703 as it uses all the
+available LEDs to display the status of the login. NFC-Reader used is the SCM SCL3711[[https://www.amazon.de/dp/B008LT0SFY/?tag=krebsco-21|Amazon DE]] as this one is supported pretty well by libnfc and is quite small.
+
+For more information see: [[https://github.com/shackspace/user_suppository|Github Repository]] and the source code of this profile. Direct deployment may not work as expected, even though you might haven't expected anything.
+
+==== krebs ====
+This is the base profile for krebs nodes. Copy it to create cool krebs images. Core feature is the automatic connection to the retiolum darknet.
+
+=== Hard Package dependencies ===
+Make sure to include them in custom\_make
+    tinc
+
+==== heckenkrebs ====
+Heckenkrebs is the automatic internet-establish and gateway provider for the
+krebs darknet. It is a fork of the original krebs image.
+
+This profile will automatically establish wireless connections to shared wireless networks. If you want the Krebs to connect to your wlan you need to add your wireless credentials to /etc/wifipw. Syntax is $SSID;$PW
+W-Lans can be blacklisted by adding the ssid to /etc/wifiblack
+
+run infest on the system to get into the retiolum darknet (requires internet)
+hostsfiles for tinc can be updated with tinc-update
+
+the LED will turn off after 60 seconds of working internet connection to save power
+
+=== Functionality ===
+The Heckenkrebs will use the aap tool to connect randomly to wireless networks
+which are unprotected in some ways.
+
+aap is patched to calculate default easybox keys in addition to try open
+networks. It also provides a blacklist and access-point password list
+===== Quickstart to get your own krebs on wr703n =====
+!important this is pseudo code, so please use your brains
+
+    cd /krebs/minikrebs
+    ./prepare krebs
+    builder/init
+
+==== Stock image =====
+connect to krebs
+
+    dhclient eth0
+    firefox 192.168.1.1
+    {{goto the firmware-upgrade page}}
+    {{upload ../builder/bin/ar71xx/openwrt-ar71xx-generic-tl-wr703n-v1-squashfs-factory.bin}}
+    {{wait}}
+    {{reconnect power}}
+
+==== Upgrade image =====
+
+=== From Recovery  =====
+
+    {{ start krebs in recovery mode}}
+    ifconfig eth0 192.168.1.3
+    telnet 192.168.1.1
+        mount_root
+        passwd
+        /etc/init.d/dropbear start
+        exit
+    OWN_IP=192.168.1.3 ./upgrade 192.168.1.1
+    {{reconnect power}}
+
+=== When minikrebs is in dhcp-client mode ====
+
+    echo "dhcp-range=192.168.0.50,192.168.0.150,12h" > /etc/dnsmasq.conf
+    ifconfig eth0 192.168.0.1 && dnsmasq -d
+    
+===== WR703N Mods =====
+==== USB-Hub =====
+[[http://www.modlog.net/?p=348|Adding an internal USB Hub]]
+
+==== Pigtail =====
+[[http://blagg.tadkom.net/2012/09/15/better-wr703n-antenna-mod/|Add a SMA female connector]] or [[https://forum.openwrt.org/viewtopic.php?pid=152457#p152457|2]] e.g. from [[http://www.amazon.de/BIGtec-WLAN-Adapterkabel-SMA-Buchse/dp/B006ANRHHU??tag=krebsco-21|Amazon]] if you want to install an external antenna.
+==== Serial Port ====
+[[http://wiki.villagetelco.org/index.php?title=Building_a_Serial_Port_for_TL-WR703N|look here for serial port info]]
