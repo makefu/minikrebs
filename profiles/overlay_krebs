@@ -1,0 +1,6 @@
+core
+minimal/no-ppp
+minimal/no-dnsmasq
+network/client-mode
+usb/root_overlay
+krebs
