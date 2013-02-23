@@ -14,7 +14,8 @@ usage (){
 usage: $0 [TRAIT_DIR]
 
 ENVIRONMENT:
-        SHOW_FILES  -- shows all files provided by profile
+    SHOW_FILES  -- shows all files provided by profile (default: not set)
+    HIDE_PKGS   -- shows all packages included by the profile (default: false)
 EOF
 }
 
@@ -26,7 +27,7 @@ echo "Available traits:"
 find . | while read line; do 
     if [ -e "$line/MANIFEST" -o -e "$line/files" ];then
         echo "$line" | indent 2
-        if [ -e "$line/MANIFEST" ];then
+        if [ -e "$line/MANIFEST" -a -z "${HIDE_PKGS:-}" ];then
             source "$line/MANIFEST"
             echo "Includes Packages: $PACKAGES" | indent 4
         fi
