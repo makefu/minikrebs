@@ -1,0 +1,6 @@
+#!/bin/sh
+
+PORT=${LCD_PORT:-/dev/ttyATH0}
+stty < $PORT | grep -q "9600" || stty -F $PORT  9600
+echo > $PORT
+echo -n "$@" > $PORT

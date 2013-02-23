@@ -1,0 +1,14 @@
+# LCD 
+This mod adds a VFD LCD to the uart port of your minikrebs.
+The following Pinout is required on the LCD:
+
+Using Blue Connector:
+- 1 - 5V
+- 3 - RX
+- 4 - GND
+
+The Following Pins can be used on the MR3020:
+
+- TX from UART connector
+- 5V from USB-Connector
+- GND from slide switch
